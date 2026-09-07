@@ -1,9 +1,9 @@
 /**
- * Placeholder Telegram bot.
+ * Placeholder Telegram Bot
  *
- * Runs in webhook mode via Express, same pattern as the other bots in
- * this series. Currently just responds to /start — add real commands
- * and logic here as the bot's purpose gets defined.
+ * A minimal skeleton bot: runs in webhook mode, responds to /start,
+ * exposes /health for Railway's health check. Built to be extended
+ * later — add new commands with bot.onText(/pattern/, handler).
  */
 
 require("dotenv").config();
@@ -23,14 +23,16 @@ if (!WEBHOOK_URL) {
   process.exit(1);
 }
 
-const bot = new TelegramBot(BOT_TOKEN, { webHook: true });
 const app = express();
 app.use(express.json());
 
-const webhookPath = `/webhook/${BOT_TOKEN}`;
+const bot = new TelegramBot(BOT_TOKEN, { webHook: true });
 
-bot.setWebHook(`${WEBHOOK_URL}${webhookPath}`)
-  .then(() => console.log(`Webhook set to ${WEBHOOK_URL}${webhookPath}`))
+const webhookPath = `/webhook/${BOT_TOKEN}`;
+const fullWebhookUrl = `${WEBHOOK_URL.replace(/\/$/, "")}${webhookPath}`;
+
+bot.setWebHook(fullWebhookUrl)
+  .then(() => console.log(`Webhook set to ${fullWebhookUrl}`))
   .catch((err) => console.error("Failed to set webhook:", err.message));
 
 app.post(webhookPath, (req, res) => {
@@ -42,12 +44,22 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+// --- Commands ---
+// Add new bot.onText(...) handlers below as this bot grows.
+
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, "👋 Hello! I'm up and running.");
+  bot.sendMessage(
+    chatId,
+    "👋 This bot is under construction. Check back soon!"
+  );
 });
 
 bot.onText(/\/help/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, "No commands configured yet.");
+  bot.sendMessage(chatId, "This is a placeholder bot. No features yet.");
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });
