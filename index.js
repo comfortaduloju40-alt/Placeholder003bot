@@ -44,12 +44,10 @@ app.get("/health", (req, res) => {
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(
-    chatId,
-    "👋 Hi! This bot is still under construction — check back soon."
-  );
+  bot.sendMessage(chatId, "👋 Hello! I'm up and running.");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, "No commands configured yet.");
 });
